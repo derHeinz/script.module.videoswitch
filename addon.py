@@ -14,8 +14,8 @@ def translate(text):
 	return addon.getLocalizedString(text).encode("utf-8")
 
 def showOptions(main=None):
-	headings = ["to HDMI", "to LVDS", "to VGA", "restart"]
-	handlers = [main.toHDMI, main.toLVDS, main.toVGA, main.restart]
+	headings = ["to HDMI", "to LVDS", "to VGA", "test_audio", "restart"]
+	handlers = [main.toHDMI, main.toLVDS, main.toVGA, main.testAudio, main.restart]
 
 	index = xbmcgui.Dialog().select(addonname, headings)
 	if index >= 0:
@@ -32,28 +32,21 @@ class main():
 		
 	def toHDMI(self):
 		res = "1280x720"
-		#self._exec(["xrandr", "--output", "HDMI-1", "--mode", res])
-		#self._exec(["xrandr", "--output", "HDMI-1", "--primary"])
-		#self._exec(["xrandr", "--output", "LVDS-1", "--off"])
-		#self._exec(["xrandr", "--output", "VGA-1", "--off"])
-		#self._exec(["xrandr", "--output", "HDMI-1", "--auto"])
-		#self._exec(["xrandr", "--output", "HDMI-1", "--mode", res])
-		#self.restart()
-		self._toMode("HDMI-1", "LVDS-1", "HDMI-1", res)
+		self._toMode("HDMI1", "LVDS1", "VGA1", res)
 
 	def toLVDS(self):
-		#self._exec(["xrandr", "--output", "LVDS-1", "--primary"])
-		#self._exec(["xrandr", "--output", "LVDS-1", "--auto"])
-		#self._exec(["xrandr", "--output", "HDMI-1", "--off"])
-		#self._exec(["xrandr", "--output", "VGA-1", "--off"])
-		#self._exec(["xrandr", "--output", "LVDS-1", "--auto"])
-		#self.restart()
-		self._toMode("LVDS-1", "VGA-1", "HDMI-1")
+		self._toMode("LVDS1", "VGA1", "HDMI1")
 
 	def toVGA(self):
 		res = "1024x786"
-		self._toMode("VGA-1", "LVDS-1", "HDMI-1", res)
+		self._toMode("VGA1", "LVDS1", "HDMI1", res)
 		
+		
+	def testAudio(self):
+		xbmc.executehttpapi( "SetGUISetting(0;audiooutput.mode;%s)" % audio_mode )
+		# Settings.SetSettingValue
+		#audiooutput.audiodevice
+		#ALSA:hdmi:CARD=MID,DEV=0
 	def _toMode(self, main, off_1, off_2, res=None):
 		if res is not None:
 			self._exec(["xrandr", "--output", main, "--mode", res])
